@@ -8,7 +8,7 @@ import html
 import re
 import sys
 
-
+BASE_URL = r'https://www.ysl.com/us/'
 api = r'https://www.ysl.com/Search/RenderProductsAsync?ytosQuery=true&department=mfall18_gallery&gender=U&season=A%2CP%2CE&yurirulename=searchwithdepartment&page=1&productsPerPage={}&suggestion=false&facetsvalue=&totalPages=12&totalItems=248&partialLoadedItems=22&itemsToLoadOnNextPage=22&siteCode=SAINTLAURENT_US'
 
 PRODUCTS_PER_PAGE = 999
@@ -36,7 +36,10 @@ def get_product_urls(file_name = None):
         }
         url = api.format(PRODUCTS_PER_PAGE)
         print(url)
-        r = requests.get(url, headers=headers)
+        # r = requests.get(url, headers=headers)
+        s = requests.Session()
+        s.get(BASE_URL)
+        r = s.get(url)
         soup = BeautifulSoup(r.content, 'html.parser')
         save_html(soup)
         urls = list(map(lambda url: url['href'], soup.find_all('a')))
@@ -68,9 +71,9 @@ def main():
         product_urls = get_product_urls(sys.argv[1])
     else:
         product_urls = get_product_urls()
-    # with open('urls.txt', 'w', encoding='utf-8') as file:
-    #     for url in product_urls:
-    #         file.write('{}\n'.format(url))
+    with open('urls.txt', 'w', encoding='utf-8') as file:
+        for url in product_urls:
+            file.write('{}\n'.format(url))
     print('Total items: {}'.format(len(product_urls)))
     for url in product_urls[:5]:
         print(url)
