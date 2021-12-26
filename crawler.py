@@ -26,7 +26,7 @@ def get_cookie():
 
 def get_product_urls(file_name = None):
     if file_name is not None:
-        urls = list()
+        urls = []
         with open(file_name, 'r') as file:
             for line in file:
                 urls.append(line.rstrip('\n'))
@@ -48,13 +48,13 @@ def get_product_urls(file_name = None):
 def get_product(url):
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
-    product ={
-        'name': '',
+    product = {
         'description': '',
         'details': '',
         'imgs': {},
+        'name': soup.select_one('span.modelName.inner').text.strip(),
     }
-    product['name'] = soup.select_one('span.modelName.inner').text.strip()
+
     description_content = soup.select('div.descriptionContent.accordion-content')
     product['description'] = description_content[0].text.strip()
     product['details'] = description_content[1].text.strip()
@@ -66,7 +66,7 @@ def get_product(url):
         # print(str(img))
 
 def main():
-    product_urls = list()
+    product_urls = []
     if len(sys.argv) > 1:
         product_urls = get_product_urls(sys.argv[1])
     else:
